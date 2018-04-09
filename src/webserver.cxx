@@ -30,40 +30,48 @@ namespace web {
     }
 
     void webserver::process_request(http_request& req, http_response& res) {
-        // Iterate through middleware
-        for(middleware* mw: middleware_pipeline) {
-            mw->process(req, res);
-        }
-
-        // Find router.
-        // call appropriate router method.
-        router r;
-        try {
-            r = routers.at(req.path);
-        }
-        catch(std::out_of_range& e) {
-            r = default_router;
-        }
-        
-        std::string method;
-        std::transform(req.method.begin(), req.method.end(), method.begin(), ::tolower);
-        if(method == "get") {
-            r.get(req.path, req, res);
-        }
-        else if(method == "post") {
-            r.post(req.path, req, res);
-        }
-        else if(method == "put") {
-            r.put(req.path, req, res);
-        }
-        else if(method == "delete") {
-            r.del(req.path, req, res);
-        }
-        else if(method == "options") {
-            r.options(req.path, req, res);
+        if(!req.valid) {
+            // should probably return a response to send.
+            std::cout << "Request was invalid: " + req.invalid_reason << std::endl;
+            res.send("400", req.invalid_reason);
         }
         else {
-            res.send("400");
+            // Iterate through middleware
+            for(middleware* mw: middleware_pipeline) {
+                mw->process(req, res);
+            }
+
+            // Find router.
+            // call appropriate router method.
+            router r;
+            try {
+                r = routers.at(req.path);
+            }
+            catch(std::out_of_range& e) {
+                r = default_router;
+            }
+            
+            std::string method(req.method.length(), 'X');
+            std::transform(req.method.begin(), req.method.end(), method.begin(), ::tolower);
+            if(method == "get") {
+                r.get(req.path, req, res);
+            }
+            else if(method == "post") {
+                r.post(req.path, req, res);
+            }
+            else if(method == "put") {
+                r.put(req.path, req, res);
+            }
+            else if(method == "delete") {
+                r.del(req.path, req, res);
+            }
+            else if(method == "options") {
+                r.options(req.path, req, res);
+            }
+            else {
+                // TODO include test for invalid methods.
+                res.send("501");
+            }
         }
     }
 

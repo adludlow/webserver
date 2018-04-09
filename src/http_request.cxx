@@ -25,6 +25,8 @@ namespace web {
 
     void http_request::parse_request(char *request) {
         std::stringstream req_stream(request);
+
+        // Request line parsing
         std::string request_line = "";
         std::getline(req_stream, request_line);
 
@@ -38,7 +40,17 @@ namespace web {
             throw std::invalid_argument("Invalid method: " + method);
         }
 
+        // TODO validate the uri
         uri = request_line_items[1];
+        // Should be 1.1
         http_version = request_line_items[2];
+
+        // Request Header parsing
+        for(;getline(req_stream, request_line); !req_stream.eof()) {
+            if(request_line == "\r") {
+                std::cout << "End of headers." << std::endl;
+            }
+            std::cout << request_line << std::endl;
+        }
     }
 }
