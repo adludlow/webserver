@@ -24,6 +24,8 @@ namespace web {
 
         while(is_running) {
             http_request req = listener->listen();
+            std::cout << req.to_string() << std::endl;
+
             std::unique_ptr<http_response> res = std::make_unique<http_response>(req.sockfd);
             process_request(req, *res);
         }

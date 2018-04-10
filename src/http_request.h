@@ -10,6 +10,8 @@ namespace web {
         public:
             http_request(int sockfd, char *request);
 
+            static const std::string HEADER_BODY_DELIM;
+
             int sockfd;
             char *request_buffer;
             std::string method;
@@ -18,10 +20,13 @@ namespace web {
             std::string path;
             bool valid;
             std::string invalid_reason = "";
+            std::string body;
 
             std::map<std::string, std::string> query;
             std::map<std::string, std::string> param;
-            std::map<std::string, std::string> header;
+            std::map<std::string, std::string> headers;
+
+            std::string to_string();
             
         private:
             const std::set<std::string> valid_methods = {

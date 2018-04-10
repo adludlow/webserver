@@ -2,7 +2,6 @@
 
 #include <string>
 #include <string.h>
-
 #include "util.h"
 
 namespace web_util {
@@ -28,4 +27,5 @@ namespace string_util {
         split(s, delim, std::back_inserter(elems));
         return elems;
     }
+
 }
